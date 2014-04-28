@@ -1,0 +1,50 @@
+Universidade Federal da Fronteira Sul – UFFS 
+Curso: Ciência da Computação
+Componente Curricular: Banco de Dados II
+Professor: Dr. Denio Duarte
+Alunos: Edimar Roque Martello Junior e Luciano Junior Mattiello
+
+Introdução
+	Trabalho desenvolvido para o componente curricular de Banco de Dados II, sua finalidade é ser o prototipo de um gerenciador de buffer. O mesmo é constituido de 3 arquivos, “buffend.h”,  “funcoesbuffer.c” e “Nossobuffer.c”, onde o primeiro é a biblioteca, na qual possuí as declarações  das funções, o segundo arquivo contém o código das funções apresentadas no “buffer.h” e por fim, o arquivo “Nossobuffer.c” é apenas um exemplo de utilização das funções.
+
+1. Definição das estruturas, foram criadas duas estruturas uma para armazenar informações referentes aos meta dados e outra simulando o buffer.
+
+Estrutura armazenando os meta dados, onde a mesma armazena o nome do campo, o tipo e o tamanho, será necessário alocar um vetor dessa estrutura no tamanho do número de campos/colunas existentes :
+	typedef struct table_bd{
+		char nome[TAM];
+		char tipo;
+		int tam;
+	}tp_table;
+
+Estrutura armazenando os dados, ou seja simulando o buffer, nela é armazenada o tamanho da página, dirty bit, pin counter, e o número de registros:
+	typedef struct buffer{
+   		unsigned char db; //Dirty bit
+		unsigned char pc; //Pin counter
+		unsigned int nrec; //numero de registros armazenados na pagina
+   		char data[SIZE];
+	}tp_buffer;
+	
+Obeservações: Como o trabalho ainda está na sua etapa inicial, as flags  dirty bit e pin counter não foram atualizadas, levando em conta que nesta parte nosso gerenciador somente lê os dados no arquivo, e joga para o bufferpoll, até quando for o fim do arquivo, caso todas as páginas forem preenchidas antes do fim do arquivo, o gerenciador recomeça substituir a partir da primeira página.
+
+
+2. Definição das funções, encontradas juntamente com as estruturas definidas acima no buffend.h as funções são:
+1. void initbuffer(tp_buffer *);
+2. void cpystr(char *, char *, int, int);
+3. int load_metadata(FILE *, tp_table *, int);
+4. void drawline(tp_buffer *, tp_table *, int, int *, int);
+5. int cabecalho(tp_table *, int);
+6. int printbufferpoll(tp_buffer *, tp_table *, int, int);
+7. void cria_campo(int, int, char *);
+8. void load_data(FILE *, tp_buffer *, int);
+
+
+	1 – Esta tem como funcionalidade inicializar os valores da estrutura buffer. Está função não possuí nenhum valor de retorno;
+	2 – Possui um propósito simples, copiar o conteúdo do vetor origem para o destino. Para que isso seja possível seus parâmetros são, cpystr(destino, origem, número_de_registros_na_página, tamanho_do_registro);
+	3 – load_metada como o próprio nome sugere carrega as informações referentes aos meta dados, seus parâmetros são na ordem, ponteiro para o arquivo, ponteiro para a estrutura de meta dados e o número de campos encontrados naquela “tabela”;
+	4 – Esta função imprime uma linha/tupla da tabela, ele espera como parâmetro, ponteiro para o buffer e para os meta dados, o número de campos daquela tabela, a posição inicial do registro a ser impresso e em qual página encontrasse aquela determinada tupla;
+	5 – A função cabeçalho imprime o nome de cada campo/coluna da tabela, espera como parâmetro o número colunas/registros/campos e claro um ponteiro para a estrutura dos meta dados,;
+	6 – Esta função imprime todas os dados carregados numa determinada página do buffer, os parâmetros esperados são, ponteiro para os dados e meta dados, lógicamente a página cuja desejasse imprimir e o número de coluna daqueles dados;
+	7 – Cria campo é uma função auxiliar que ajuda, as funções 4, 5 e 6 na tabulação, para os dados serem impressos na tela no formato de uma tabela. Ela ainda precisa ser aprimorada. 
+	8 – E finalmente a load_data responsável por resgatar os dados presentes no arquivo e armazena-los no buffer, seus parâmetro também são ponteiros para a estrutura dos meta dados e para a estrutura do buffer.
+
+	
